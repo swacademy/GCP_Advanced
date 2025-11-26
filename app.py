@@ -17,10 +17,10 @@ app.secret_key = 'your_secret_key'
 #Session(app)
 
 # MySQL 설정
-app.config['MYSQL_HOST'] = '10.0.64.100' #DB iP
-app.config['MYSQL_USER'] = 'frodo'
-app.config['MYSQL_PASSWORD'] = 'Frodo5020!!'
-app.config['MYSQL_DB'] = 'frodo'
+app.config['MYSQL_HOST'] = '' #DB iP
+app.config['MYSQL_USER'] = ''
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = ''
 
 mysql = MySQL(app)
 
@@ -38,7 +38,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    cursor.execute("SELECT * FROM Users WHERE id = %s", (user_id,))
     user = cursor.fetchone()
     if user:
         return User(id=user[0], username=user[1], password=user[2])
@@ -55,7 +55,7 @@ def register():
         password = request.form['password']
         hashed_password = generate_password_hash(password)  # 기본 방법 사용
         cursor = mysql.connection.cursor()
-        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+        cursor.execute("INSERT INTO Users (username, password) VALUES (%s, %s)", (username, hashed_password))
         mysql.connection.commit()
         cursor.close()
         flash('Registration successful. Please log in.')
@@ -68,7 +68,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         cursor = mysql.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
         user = cursor.fetchone()
         if user and check_password_hash(user[2], password):
             login_user(User(id=user[0], username=user[1], password=user[2]))
